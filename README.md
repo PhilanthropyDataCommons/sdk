@@ -7,6 +7,8 @@ to make sdk generation easier in particular target languages.  The codegen proje
 beyond the ones explicitly defined here.
 
 ## Prequisites
+- JRE (18+)
+- Maven (3.9+)
 
 ## Scripts
 ### Adding a new language
@@ -19,8 +21,9 @@ but maybe there's a bug or something subtle that needs updating).
 
 This repository is designed to support the second approach, and there are a few gradle tasks to bootstrap the creation of those templates:
 
-The steps for adding support for a new language are as follows:
-
+#### Steps:
 1. Add a new language generator module: `./gradlew createLanguageModule -Planguage=foo`
 2. Develop the language templates.
-3. Compile the language generator module (gradle task coming soon)
+3. Compile the language generator module: `./gradlew packageLanguageModule -Planguage=foo`
+
+If you want to package all of the language generator modules at once you can run `./gradlew packageLanguageModules`
