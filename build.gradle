@@ -1,0 +1,93 @@
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    toCopy
+}
+
+dependencies {
+    toCopy 'io.swagger.codegen.v3:swagger-codegen-cli:3.0.47'
+}
+
+task downloadSwaggerCodegen(type: Copy) {
+    from configurations.toCopy
+    into 'lib'
+    rename {
+        String fileName -> "swagger-codegen-cli.jar"
+    }
+}
+
+task createLanguageModule() {
+    dependsOn downloadSwaggerCodegen
+    description = 'Generate a Swagger Codegen Module for a new language'
+
+    doFirst {
+        if (!project.hasProperty('language')) {
+            throw new GradleException("The 'language' property is required. Please use -Planguage=<yourLanguage>.")
+        }
+    }
+    doLast {
+        def language = project.language
+        exec {
+            commandLine 'java', '-jar', 'lib/swagger-codegen-cli.jar', 'meta',
+                '-o', "templates/${language}",
+                '-n', "${language}",
+                '-p', "org.philanthropydatacommons"
+        }
+    }
+}
+
+def invokeLanguageModulePackager = { String language ->
+    println "Compiling module for language: $language"
+    exec {
+        workingDir = file("${project.projectDir}/templates/${language}")
+        commandLine 'mvn', 'package'
+    }
+}
+
+task packageLanguageModule() {
+    doFirst {
+        if (!project.hasProperty('language')) {
+            throw new GradleException("The 'language' property is required. Please use -Planguage=<yourLanguage>.")
+        }
+    }
+    doLast {
+        def language = project.language
+        invokeLanguageModulePackager(language)
+    }
+}
+
+task packageLanguageGenerators() {
+    doLast {
+        file("${project.projectDir}/templates").eachDir { languageFolder ->
+            def language = languageFolder.name
+            invokeLanguageModulePackager(language)
+        }
+    }
+}
+
+task generateSdks() {
+    dependsOn buildLanguageGenerators
+    doFirst {
+        if (!project.hasProperty('swaggerSpecificationPath')) {
+            throw new GradleException("The 'swaggerSpecificationPath' property is required. Please use -PswaggerSpecificationPath=<swaggerSpecificationPath>.")
+        }
+    }
+
+    doLast {
+        file("${project.projectDir}/templates").eachDir { languageFolder ->
+            def language = languageFolder.name
+            def swaggerSpecificationPath = project.swaggerSpecificationPath
+            def sdkGenJar = "${project.projectDir}/templates/${language}/target/${language}Codegen-swagger-codegen-1.0.0.jar"
+            exec {
+                commandLine 'java',
+                    '-cp', "${sdkGenJar}:lib/swagger-codegen-cli.jar",
+                    'io.swagger.codegen.v3.cli.SwaggerCodegen', 'generate',
+                    '-l', "${language}Codegen",
+                    '-i', "${swaggerSpecificationPath}",
+                    '-o', "build/${language}"
+            }
+        }
+    }
+}
