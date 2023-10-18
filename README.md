@@ -11,6 +11,16 @@ beyond the ones explicitly defined here.
 - Maven (3.9+)
 
 ## Scripts
+### Generating sdks
+To generate the SDKs supported by this project, you will need a locally defined [swagger](https://swagger.io/) specification.  The current swagger specification for the PDC can be found in the [service repository](https://github.com/PhilanthropyDataCommons/service/blob/main/src/openapi.json).
+
+#### Steps:
+1. `./gradlew generateSdks -PswaggerSpecificationPath=example/path.json`.
+2. Inspect the `build` directory to see the resulting sdk files.
+
+Each language target will have its own directory inside of `build` (e.g. `build/typescript`).
+Some languages might have additional build steps defined in their build's README.md file.
+
 ### Adding a new language
 
 The `swagger-codegen` project itself provides two ways to customize the code generation process:

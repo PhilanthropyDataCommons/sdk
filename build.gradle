@@ -66,3 +66,28 @@ task packageLanguageModules() {
         }
     }
 }
+
+task generateSdks() {
+    dependsOn buildLanguageGenerators
+    doFirst {
+        if (!project.hasProperty('swaggerSpecificationPath')) {
+            throw new GradleException("The 'swaggerSpecificationPath' property is required. Please use -PswaggerSpecificationPath=<swaggerSpecificationPath>.")
+        }
+    }
+
+    doLast {
+        file("${project.projectDir}/templates").eachDir { languageFolder ->
+            def language = languageFolder.name
+            def swaggerSpecificationPath = project.swaggerSpecificationPath
+            def sdkGenJar = "${project.projectDir}/templates/${language}/target/${language}Codegen-swagger-codegen-1.0.0.jar"
+            exec {
+                commandLine 'java',
+                    '-cp', "${sdkGenJar}:lib/swagger-codegen-cli.jar",
+                    'io.swagger.codegen.v3.cli.SwaggerCodegen', 'generate',
+                    '-l', "${language}Codegen",
+                    '-i', "${swaggerSpecificationPath}",
+                    '-o', "build/${language}"
+            }
+        }
+    }
+}
