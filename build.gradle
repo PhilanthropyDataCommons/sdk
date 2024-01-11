@@ -1,0 +1,19 @@
+plugins {
+	id 'base'
+	id 'org.hidetake.swagger.generator' version '2.19.2'
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	swaggerCodegen project('generators')
+}
+
+swaggerSources {
+}
+
+swaggerSources*.code*.dependsOn 'generators:jar'
+
+build.dependsOn generateSwaggerCode

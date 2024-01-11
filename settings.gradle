@@ -6,3 +6,4 @@
  */
 
 rootProject.name = 'sdk'
+include 'generators'
