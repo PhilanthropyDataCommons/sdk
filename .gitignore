@@ -4,5 +4,8 @@
 # Ignore Gradle build output directory
 build
 
+# Ignore local configuration files
+configuration/*.json
+
 # Ignore the local specification file
 openapi.json

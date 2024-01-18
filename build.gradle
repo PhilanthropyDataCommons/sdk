@@ -12,6 +12,15 @@ dependencies {
 }
 
 swaggerSources {
+	typescript {
+		inputFile = file('openapi.json')
+		code {
+			wipeOutputDir = true
+			outputDir = file('build/typescript')
+			configFile = file('configuration/typescript.json')
+			language = 'typescript'
+		}
+	}
 }
 
 swaggerSources*.code*.dependsOn 'generators:jar'
