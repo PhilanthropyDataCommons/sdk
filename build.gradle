@@ -1,0 +1,28 @@
+plugins {
+	id 'base'
+	id 'org.hidetake.swagger.generator' version '2.19.2'
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	swaggerCodegen project('generators')
+}
+
+swaggerSources {
+	typescript {
+		inputFile = file('openapi.json')
+		code {
+			wipeOutputDir = true
+			outputDir = file('build/typescript')
+			configFile = file('configuration/typescript.json')
+			language = 'typescript'
+		}
+	}
+}
+
+swaggerSources*.code*.dependsOn 'generators:jar'
+
+build.dependsOn generateSwaggerCode
