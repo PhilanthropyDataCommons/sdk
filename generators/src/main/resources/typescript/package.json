@@ -1,0 +1,22 @@
+{
+  "name": "@pdc/sdk",
+  "version": "0.0.0",
+  "description": "A swagger client for the Philanthropy Data Commons (PDC)",
+  "author": "Open Tech Strategies",
+  "keywords": [
+    "typescript",
+    "Philanthropy Data Commons"
+  ],
+  "license": "AGPL-3.0",
+  "main": "./dist/index.js",
+  "scripts" : {
+		"build": "npm run cleanup && npm run build:node",
+		"build:node": "tsc -p tsconfig.json",
+		"cleanup": "rimraf dist"
+  },
+  "devDependencies": {
+		"@tsconfig/node18": "^18.2.2",
+		"rimraf": "^5.0.5",
+		"typescript": "^5.3.3"
+  }
+}

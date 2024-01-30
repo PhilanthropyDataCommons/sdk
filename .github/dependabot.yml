@@ -6,3 +6,7 @@ updates:
       interval: "daily"
       timezone: "America/Los_Angeles"
       time: "04:00"
+  - package-ecosystem: "npm"
+    directory: "/generators/src/resources/typescript"
+    schedule:
+      interval: "daily"
