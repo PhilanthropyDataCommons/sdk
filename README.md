@@ -23,7 +23,6 @@ From the project root you can run the following commands:
 
 ```shell
 > cp YOUR_SWAGGER_SPEC_LOCATION ./openapi.json
-> envsubst < ./configuration/typescript.json.template > ./configuration/typescript.json
 > ./gradlew generateSwaggerCode
 ```
 
