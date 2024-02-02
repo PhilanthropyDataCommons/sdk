@@ -1,11 +1,15 @@
 package io.swagger.codegen.v3.generators.typescript;
 
+import com.pdc.SemVerUtils;
 import io.swagger.codegen.v3.SupportingFile;
+import io.swagger.v3.oas.models.OpenAPI;
+
 import java.io.File;
 
 public class TypescriptGenerator extends AbstractTypeScriptClientCodegen {
 	protected String sourceFolder = "src";
 	protected String templateVersion = "0.0.1";
+	protected String packageVersion = "";
 
 	/**
 	 * Configures a friendly name for the generator.  This will be used by the generator
@@ -42,9 +46,21 @@ public class TypescriptGenerator extends AbstractTypeScriptClientCodegen {
 		supportingFiles.add(new SupportingFile("types/index.mustache", "", "src/types/index.ts"));
 
 		// We want the package / lock files to be detectable and maintained by dependabot.
-		// This means they cannot be templates, since dependabot expects a specific name.
-		supportingFiles.add(new SupportingFile("package.json", "", "package.json"));
-		supportingFiles.add(new SupportingFile("package-lock.json", "", "package-lock.json"));
+		// We also want the files to be interpreted as templates.
+		// Both of these requirements are driven by file name, which is why we are using symlinks.
+		supportingFiles.add(new SupportingFile("package.mustache", "", "package.json"));
+		supportingFiles.add(new SupportingFile("package-lock.mustache", "", "package-lock.json"));
+
+	}
+
+	@Override
+	public void preprocessOpenAPI(OpenAPI openAPI) {
+		super.preprocessOpenAPI(openAPI);
+		this.packageVersion = SemVerUtils.combineSemVer(
+			this.templateVersion,
+			openAPI.getInfo().getVersion()
+		).toString();
+		additionalProperties.put("packageVersion", this.packageVersion);
 	}
 
 	@Override
