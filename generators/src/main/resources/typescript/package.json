@@ -1,6 +1,6 @@
 {
   "name": "@pdc/sdk",
-  "version": "0.0.0",
+  "version": "{{packageVersion}}",
   "description": "A swagger client for the Philanthropy Data Commons (PDC)",
   "author": "Open Tech Strategies",
   "keywords": [
