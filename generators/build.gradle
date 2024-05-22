@@ -7,5 +7,5 @@ repositories {
 }
 
 dependencies {
-	implementation 'io.swagger.codegen.v3:swagger-codegen-cli:3.0.56'
+	implementation 'org.openapitools:openapi-generator-cli:7.6.0'
 }
