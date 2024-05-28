@@ -7,5 +7,5 @@ repositories {
 }
 
 dependencies {
-	implementation 'io.swagger.codegen.v3:swagger-codegen-cli:3.0.56'
+	implementation 'io.swagger.codegen.v3:swagger-codegen-cli:3.0.57'
 }
