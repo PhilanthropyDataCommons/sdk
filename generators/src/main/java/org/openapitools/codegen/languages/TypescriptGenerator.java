@@ -1,9 +1,9 @@
-package io.swagger.codegen.v3.generators.typescript;
 
+package org.openapitools.codegen.languages;
+
+import org.openapitools.codegen.*;
 import com.pdc.SemVerUtils;
-import io.swagger.codegen.v3.SupportingFile;
 import io.swagger.v3.oas.models.OpenAPI;
-
 import java.io.File;
 
 public class TypescriptGenerator extends AbstractTypeScriptClientCodegen {
@@ -11,29 +11,22 @@ public class TypescriptGenerator extends AbstractTypeScriptClientCodegen {
 	protected String templateVersion = "0.0.1";
 	protected String packageVersion = "";
 
-	/**
-	 * Configures a friendly name for the generator.  This will be used by the generator
-	 * to select the library with the -l flag.
-	 *
-	 * @return the friendly name for the generator
-	 */
+	public CodegenType getTag() {
+			return CodegenType.CLIENT;
+	}
+
 	public String getName() {
 		return "typescript";
 	}
 
-	/**
-	 * Returns human-friendly help for the generator.  Provide the consumer with help
-	 * tips, parameters here
-	 *
-	 * @return A string value for the help message
-	 */
 	public String getHelp() {
 		return "Generates a typescript client library.";
 	}
 
 	public TypescriptGenerator() {
 		super();
-		outputFolder = "build/typescript";
+		outputFolder = "build" + File.separator + "typescript";
+		embeddedTemplateDir = templateDir = "typescript";
 		modelTemplateFiles.put(
 			"types/type.mustache",
 			".ts"
@@ -65,26 +58,11 @@ public class TypescriptGenerator extends AbstractTypeScriptClientCodegen {
 
 	@Override
 	public String modelFileFolder() {
-		return outputFolder + "/" + sourceFolder + "/types/" + modelPackage().replace('.', File.separatorChar);
+		return outputFolder + File.separator + sourceFolder + File.separator + "types"  + File.separator + modelPackage().replace('.', File.separatorChar);
 	}
 
 	@Override
 	public String apiFileFolder() {
-		return outputFolder + "/" + sourceFolder + "/" + apiPackage().replace('.', File.separatorChar);
-	}
-
-	@Override
-	public String getArgumentsLocation() {
-		return null;
-	}
-
-	@Override
-	public String getDefaultTemplateDir() {
-		return "typescript";
-	}
-
-	@Override
-	public String getTemplateDir() {
-		return "typescript";
+		return outputFolder + File.separator + sourceFolder + File.separator + apiPackage().replace('.', File.separatorChar);
 	}
 }
