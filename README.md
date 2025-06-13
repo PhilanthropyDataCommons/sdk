@@ -2,7 +2,7 @@
 
 This repository houses the infrastructure for generating PDC SDKs.
 
-We're using a project called [swagger-codegen](https://github.com/swagger-api/swagger-codegen) to power our SDK, and this repository provides tooling and templates to make SDK generation easier in specifically supported languages.
+We're using a project called [OpenAPI Generator](https://github.com/OpenAPITools/openapi-generator) to power our SDK, and this repository provides tooling and templates to make SDK generation easier in specifically supported languages.
 
 ## Prequisites
 
@@ -46,4 +46,4 @@ Each language target will have its own directory inside of `build/`, and you can
 
 ### Generating other SDKs:
 
-If you are interested in another language please review the [many languages](https://github.com/swagger-api/swagger-codegen/tree/master/modules/swagger-codegen/src/main/resources) that the Swagger Codegen project supports directly.  Please see the [Swagger Codegen documentation](https://github.com/swagger-api/swagger-codegen?tab=readme-ov-file#generators) for information on how to generate libraries for other languages.
+If you are interested in another language please review the [many languages](https://openapi-generator.tech/docs/generators) that the Swagger Codegen project supports directly.  Please see the [OpenAPI Generator documentation](https://openapi-generator.tech/docs) for information on how to generate libraries for other languages.
