@@ -7,27 +7,44 @@ import { Writable } from './Writable';
 
 {{#models}}
 	{{#model}}
+		{{! 1. Top-level string enum (Permission, PermissionGrantVerb, etc.) }}
+		{{#isEnum}}
+export type {{classname}} = {{#allowableValues}}{{#enumVars}}{{{value}}}{{^-last}} | {{/-last}}{{/enumVars}}{{/allowableValues}};
+
+export type Writable{{classname}} = {{classname}};
+		{{/isEnum}}
+
+		{{! 2. Top-level oneOf discriminated union (PermissionGrant) }}
+		{{#vendorExtensions.x-is-discriminated-union}}
+export type {{classname}} = {{#vendorExtensions.x-oneof-types}}{{.}}{{^-last}} | {{/-last}}{{/vendorExtensions.x-oneof-types}};
+
+export type Writable{{classname}} = Writable<{{classname}}>;
+		{{/vendorExtensions.x-is-discriminated-union}}
+
+		{{! 3. Hybrid object+inline-oneOf (PermissionGrantBase) }}
+		{{#vendorExtensions.x-has-inline-oneof}}
+export type {{classname}} = {
+			{{#vars}}
+	{{#isReadOnly}}readonly {{/isReadOnly}}{{name}}{{^required}}?{{/required}}: {{#vendorExtensions.x-is-literal}}'{{vendorExtensions.x-const-value}}'{{/vendorExtensions.x-is-literal}}{{^vendorExtensions.x-is-literal}}{{#vendorExtensions.x-is-string-enum-array}}Array<{{#vendorExtensions.x-enum-values}}'{{.}}'{{^-last}} | {{/-last}}{{/vendorExtensions.x-enum-values}}>{{/vendorExtensions.x-is-string-enum-array}}{{^vendorExtensions.x-is-string-enum-array}}{{#isEnum}}{{#allowableValues}}{{#enumVars}}{{{value}}}{{^-last}} | {{/-last}}{{/enumVars}}{{/allowableValues}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}{{/vendorExtensions.x-is-string-enum-array}}{{/vendorExtensions.x-is-literal}};
+			{{/vars}}
+} & (
+			{{#vendorExtensions.x-inline-oneof-branches}}
+	| { {{discriminator}}: '{{literalValue}}'; {{#ownFields}}{{name}}: {{tsType}}; {{/ownFields}}}
+			{{/vendorExtensions.x-inline-oneof-branches}}
+);
+
+export type Writable{{classname}} = Writable<{{classname}}>;
+		{{/vendorExtensions.x-has-inline-oneof}}
+
+		{{! 4. Default: regular object → interface, with literal/enum-array awareness }}
+		{{^isEnum}}{{^vendorExtensions.x-is-discriminated-union}}{{^vendorExtensions.x-has-inline-oneof}}
 export interface {{classname}} {
-		{{#vars}}
-	{{#isReadOnly}}readonly {{/isReadOnly}}{{name}}{{^required}}?{{/required}}: {{#isEnum}}{{{datatypeWithEnum}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}};
-		{{/vars}}
+			{{#vars}}
+	{{#isReadOnly}}readonly {{/isReadOnly}}{{name}}{{^required}}?{{/required}}: {{#vendorExtensions.x-is-literal}}'{{vendorExtensions.x-const-value}}'{{/vendorExtensions.x-is-literal}}{{^vendorExtensions.x-is-literal}}{{#vendorExtensions.x-is-string-enum-array}}Array<{{#vendorExtensions.x-enum-values}}'{{.}}'{{^-last}} | {{/-last}}{{/vendorExtensions.x-enum-values}}>{{/vendorExtensions.x-is-string-enum-array}}{{^vendorExtensions.x-is-string-enum-array}}{{#isEnum}}{{#allowableValues}}{{#enumVars}}{{{value}}}{{^-last}} | {{/-last}}{{/enumVars}}{{/allowableValues}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}{{/vendorExtensions.x-is-string-enum-array}}{{/vendorExtensions.x-is-literal}};
+			{{/vars}}
 }
 
-export type Writable{{classname}} = Writable<{{classname}}>
-
-		{{#hasEnums}}
-export namespace {{classname}} {
-			{{#vars}}
-				{{#isEnum}}
-	export enum {{enumName}} {
-					{{#allowableValues}}
-						{{#enumVars}}
-		{{{name}}} = {{{value}}}{{^@last}},{{/@last}}
-						{{/enumVars}}
-					{{/allowableValues}}
-	}
-				{{/isEnum}}
-			{{/vars}}
-}{{/hasEnums}}
+export type Writable{{classname}} = Writable<{{classname}}>;
+		{{/vendorExtensions.x-has-inline-oneof}}{{/vendorExtensions.x-is-discriminated-union}}{{/isEnum}}
 	{{/model}}
 {{/models}}

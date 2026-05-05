@@ -11,9 +11,42 @@ dependencies {
 	swaggerCodegen project('generators')
 }
 
+def serviceRef = project.findProperty('serviceRef') ?: 'main'
+def serviceRepoUrl = 'https://github.com/PhilanthropyDataCommons/service.git'
+def specSourceDir = file("$buildDir/spec-source")
+def bundledSpec = file('openapi.json')
+
+task fetchSpecSource {
+	inputs.property('serviceRef', serviceRef)
+	outputs.dir(specSourceDir)
+	doLast {
+		if (specSourceDir.exists()) {
+			delete specSourceDir
+		}
+		specSourceDir.parentFile.mkdirs()
+		exec {
+			commandLine 'git', 'clone', '--depth', '1', '--single-branch', '--branch', serviceRef,
+				serviceRepoUrl, specSourceDir.absolutePath
+		}
+	}
+}
+
+def redoclyCliVersion = '1.34.0'
+
+task bundleSpec(type: Exec) {
+	dependsOn fetchSpecSource
+	inputs.property('serviceRef', serviceRef)
+	inputs.property('redoclyCliVersion', redoclyCliVersion)
+	inputs.dir(specSourceDir)
+	outputs.file(bundledSpec)
+	commandLine 'npx', '--yes', "@redocly/cli@${redoclyCliVersion}", 'bundle',
+		"$specSourceDir/src/openapi/api.json",
+		'-o', bundledSpec.absolutePath
+}
+
 swaggerSources {
 	typescript {
-		inputFile = file('openapi.json')
+		inputFile = bundledSpec
 		code {
 			wipeOutputDir = true
 			outputDir = file('build/typescript')
@@ -22,6 +55,6 @@ swaggerSources {
 	}
 }
 
-swaggerSources*.code*.dependsOn 'generators:jar'
+swaggerSources*.code*.dependsOn 'generators:jar', 'bundleSpec'
 
 build.dependsOn generateSwaggerCode
