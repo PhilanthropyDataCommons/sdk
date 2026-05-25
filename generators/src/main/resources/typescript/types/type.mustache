@@ -7,27 +7,40 @@ import { Writable } from './Writable';
 
 {{#models}}
 	{{#model}}
+		{{#isEnum}}
+export enum {{classname}} {
+			{{#allowableValues}}
+				{{#enumVars}}
+	{{{name}}} = {{{value}}}{{^@last}},{{/@last}}
+				{{/enumVars}}
+			{{/allowableValues}}
+}
+
+export type Writable{{classname}} = Writable<{{classname}}>;
+		{{/isEnum}}
+		{{^isEnum}}
 export interface {{classname}} {
-		{{#vars}}
+			{{#vars}}
 	{{#isReadOnly}}readonly {{/isReadOnly}}{{name}}{{^required}}?{{/required}}: {{#isEnum}}{{{datatypeWithEnum}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}};
-		{{/vars}}
+			{{/vars}}
 }
 
 export type Writable{{classname}} = Writable<{{classname}}>
 
-		{{#hasEnums}}
+			{{#hasEnums}}
 export namespace {{classname}} {
-			{{#vars}}
-				{{#isEnum}}
+				{{#vars}}
+					{{#isEnum}}
 	export enum {{enumName}} {
-					{{#allowableValues}}
-						{{#enumVars}}
+						{{#allowableValues}}
+							{{#enumVars}}
 		{{{name}}} = {{{value}}}{{^@last}},{{/@last}}
-						{{/enumVars}}
-					{{/allowableValues}}
+							{{/enumVars}}
+						{{/allowableValues}}
 	}
-				{{/isEnum}}
-			{{/vars}}
+					{{/isEnum}}
+				{{/vars}}
 }{{/hasEnums}}
+		{{/isEnum}}
 	{{/model}}
 {{/models}}
