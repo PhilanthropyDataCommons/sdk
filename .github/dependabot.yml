@@ -10,3 +10,8 @@ updates:
     directory: "/generators/src/resources/typescript"
     schedule:
       interval: "daily"
+    groups:
+      development:
+        dependency-type: "development"
+        patterns:
+          - "*"
