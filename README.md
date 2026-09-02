@@ -4,9 +4,9 @@ This repository houses the infrastructure for generating PDC SDKs.
 
 We're using a project called [OpenAPI Generator](https://github.com/OpenAPITools/openapi-generator) to power our SDK, and this repository provides tooling and templates to make SDK generation easier in specifically supported languages.
 
-## Prequisites
+## Prerequisites
 
-- JRE (18+)
+- JDK (see [`.java-version`](.java-version))
 
 ## Generating SDKs
 
