@@ -4,6 +4,13 @@
 # Linux start script should use lf
 /gradlew        text eol=lf
 
-# These are Windows script files and should use crlf
-*.bat           text eol=crlf
+# These are Windows script files and should use crlf.
+#
+# Deliberately -text rather than "text eol=crlf": Dependabot writes wrapper
+# updates through the GitHub API, which has no working tree and so never runs
+# the eol clean filter. Under "text eol=crlf" it stores the upstream CRLF bytes
+# verbatim, and every later checkout then normalises them back to lf, leaving
+# gradlew.bat permanently dirty and un-resettable. -text keeps the crlf bytes
+# in the object store, so the file matches whoever wrote it.
+*.bat           -text
 
