@@ -1,6 +1,6 @@
 plugins {
 	id 'base'
-	id 'org.hidetake.swagger.generator' version '2.19.2'
+	id 'org.openapi.generator' version '7.25.0'
 }
 
 repositories {
@@ -8,20 +8,21 @@ repositories {
 }
 
 dependencies {
-	swaggerCodegen project('generators')
+	openApiGeneratorExtra project('generators')
 }
 
-swaggerSources {
-	typescript {
-		inputFile = file('openapi.json')
-		code {
-			wipeOutputDir = true
-			outputDir = file('build/typescript')
-			language = 'typescript'
-		}
-	}
+openApiGenerate {
+	generatorName = 'typescript'
+	inputSpec = file('openapi.json').toString()
+	outputDir = file('build/typescript').toString()
+	generatorClasspath.from configurations.openApiGeneratorExtra
+	cleanupOutput = true
 }
 
-swaggerSources*.code*.dependsOn 'generators:jar'
+tasks.register('generateSwaggerCode') {
+	group = 'build'
+	description = 'Generates the TypeScript SDK from the OpenAPI specification.'
+	dependsOn tasks.openApiGenerate
+}
 
 build.dependsOn generateSwaggerCode
