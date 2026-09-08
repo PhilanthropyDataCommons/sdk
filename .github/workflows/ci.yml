@@ -1,0 +1,113 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  actionlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Lint GitHub Action workflows
+        uses: raven-actions/actionlint@v2.2.0
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6.0.0
+        with:
+          distribution: temurin
+          java-version-file: .java-version
+      - uses: gradle/actions/setup-gradle@v6.3.0
+      - run: ./gradlew assemble
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6.0.0
+        with:
+          distribution: temurin
+          java-version-file: .java-version
+      - uses: gradle/actions/setup-gradle@v6.3.0
+      - run: ./gradlew test
+
+  build-specification:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the service
+        uses: actions/checkout@v7
+        with:
+          repository: PhilanthropyDataCommons/service
+      - name: Set up Node for building the specification
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - name: Install the service dependencies
+        run: npm ci
+      - name: Build the specification
+        run: npm run build:openapi
+      - name: Upload the specification
+        uses: actions/upload-artifact@v7
+        with:
+          name: openapi-specification
+          path: dist/openapi/api.json
+
+  generate-typescript:
+    needs: build-specification
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Download the specification
+        uses: actions/download-artifact@v8
+        with:
+          name: openapi-specification
+          path: specification
+      - name: Copy the specification
+        run: cp specification/api.json openapi.json
+      - uses: actions/setup-java@v6.0.0
+        with:
+          distribution: temurin
+          java-version-file: .java-version
+      - uses: gradle/actions/setup-gradle@v6.3.0
+      - name: Generate the TypeScript SDK
+        run: ./gradlew generateSwaggerCode
+      - name: Upload the TypeScript SDK
+        uses: actions/upload-artifact@v7
+        with:
+          name: typescript-sdk
+          path: build/typescript
+
+  build-typescript:
+    needs: generate-typescript
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Download the TypeScript SDK
+        uses: actions/download-artifact@v8
+        with:
+          name: typescript-sdk
+          path: build/typescript
+      - name: Set up Node for building the TypeScript SDK
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: npm
+          cache-dependency-path: build/typescript/package-lock.json
+      - name: Install the TypeScript SDK dependencies
+        working-directory: build/typescript
+        run: npm ci
+      - name: Build the TypeScript SDK
+        working-directory: build/typescript
+        run: npm run build

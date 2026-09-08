@@ -15,3 +15,13 @@ updates:
         dependency-type: "development"
         patterns:
           - "*"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      timezone: "America/Los_Angeles"
+      time: "04:00"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
