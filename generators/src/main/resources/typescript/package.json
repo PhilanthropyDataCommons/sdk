@@ -9,15 +9,18 @@
   ],
   "license": "AGPL-3.0",
   "main": "./dist/index.js",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts" : {
 		"build": "npm run cleanup && npm run build:node",
 		"build:node": "tsc -p tsconfig.json",
 		"cleanup": "rimraf dist"
   },
   "devDependencies": {
-		"@tsconfig/node18": "^18.2.2",
+		"@tsconfig/node22": "^22.0.6",
 		"rimraf": "^5.0.5",
-		"typescript": "^5.3.3"
+		"typescript": "^5.9.3"
   },
   "repository": {
     "type": "git",
