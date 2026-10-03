@@ -28,7 +28,7 @@ jobs:
         with:
           distribution: temurin
           java-version-file: .java-version
-      - uses: gradle/actions/setup-gradle@v6.3.0
+      - uses: gradle/actions/setup-gradle@v6.4.0
       - run: ./gradlew assemble
 
   test:
@@ -39,7 +39,7 @@ jobs:
         with:
           distribution: temurin
           java-version-file: .java-version
-      - uses: gradle/actions/setup-gradle@v6.3.0
+      - uses: gradle/actions/setup-gradle@v6.4.0
       - run: ./gradlew test
 
   build-specification:
@@ -80,7 +80,7 @@ jobs:
         with:
           distribution: temurin
           java-version-file: .java-version
-      - uses: gradle/actions/setup-gradle@v6.3.0
+      - uses: gradle/actions/setup-gradle@v6.4.0
       - name: Generate the TypeScript SDK
         run: ./gradlew generateSwaggerCode
       - name: Upload the TypeScript SDK
