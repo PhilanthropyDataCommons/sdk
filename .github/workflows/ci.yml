@@ -24,22 +24,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-java@v6.1.0
+      - uses: actions/setup-java@v6.2.0
         with:
           distribution: temurin
           java-version-file: .java-version
-      - uses: gradle/actions/setup-gradle@v6.4.0
+      - uses: gradle/actions/setup-gradle@v6.4.1
       - run: ./gradlew assemble
 
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-java@v6.1.0
+      - uses: actions/setup-java@v6.2.0
         with:
           distribution: temurin
           java-version-file: .java-version
-      - uses: gradle/actions/setup-gradle@v6.4.0
+      - uses: gradle/actions/setup-gradle@v6.4.1
       - run: ./gradlew test
 
   build-specification:
@@ -76,11 +76,11 @@ jobs:
           path: specification
       - name: Copy the specification
         run: cp specification/api.json openapi.json
-      - uses: actions/setup-java@v6.1.0
+      - uses: actions/setup-java@v6.2.0
         with:
           distribution: temurin
           java-version-file: .java-version
-      - uses: gradle/actions/setup-gradle@v6.4.0
+      - uses: gradle/actions/setup-gradle@v6.4.1
       - name: Generate the TypeScript SDK
         run: ./gradlew generateSwaggerCode
       - name: Upload the TypeScript SDK
